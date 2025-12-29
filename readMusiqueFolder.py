@@ -73,9 +73,8 @@ def save_results(_myList, _output_file):
 
     with open(_output_file, 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f, delimiter=";")
-        # writer.writerows(_myList)
-        for entry in _myList:
-            writer.writerow(entry)
+        writer.writerow(['Artist', 'Album'])
+        writer.writerows(_myList)
 
     print(f"Saved to {_output_file}")
 
