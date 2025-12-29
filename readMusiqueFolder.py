@@ -1,6 +1,7 @@
 import os
+import csv
 
-def create_album_list(music_folder, output_file):
+def create_album_list(music_folder):
     """
     Scans a music directory and creates a text file listing artists and albums.
 
@@ -20,6 +21,9 @@ def create_album_list(music_folder, output_file):
         music_folder (str): The absolute path to the main music folder.
         output_file (str): The name of the text file to create.
     """
+
+    element_list = []
+
     # --- Safety Check ---
     # Ensure the specified music folder exists before proceeding.
     if not os.path.isdir(music_folder):
@@ -30,41 +34,50 @@ def create_album_list(music_folder, output_file):
     try:
         # Open the output file in 'write' mode. This will create the file
         # or overwrite it if it already exists.
-        with open(os.path.join(music_folder, output_file), 'w', encoding='utf-8') as f:
-            print(f"Scanning '{music_folder}'...")
-            
-            # Get the list of artist folders.
-            # os.listdir() returns a list of all files and directories in a path.
-            artist_folders = os.listdir(music_folder)
-            
-            # Sort the list alphabetically for a clean output file.
-            artist_folders.sort()
-
-            # Loop through each item in the main music folder.
-            for artist_name in artist_folders:
-                artist_path = os.path.join(music_folder, artist_name)
-
-                # Check if the item is a directory (i.e., an artist folder).
-                if os.path.isdir(artist_path):
-                    
-                    # Now, get the list of album folders inside the artist folder.
-                    album_folders = os.listdir(artist_path)
-                    album_folders.sort()
-
-                    # Loop through each item in the artist folder.
-                    for album_name in album_folders:
-                        album_path = os.path.join(artist_path, album_name)
-
-                        # Check if this item is also a directory (an album folder).
-                        if os.path.isdir(album_path):
-                            # Write the formatted string to the file.
-                            f.write(f"{artist_name} - {album_name}\n")
+        print(f"Scanning '{music_folder}'...")
         
-        print(f"Success! Album list saved to '{output_file}'.")
+        # Get the list of artist folders.
+        # os.listdir() returns a list of all files and directories in a path.
+        artist_folders = os.listdir(music_folder)
+        
+        # Sort the list alphabetically for a clean output file.
+        artist_folders.sort()
+
+        # Loop through each item in the main music folder.
+        for artist_name in artist_folders:
+            artist_path = os.path.join(music_folder, artist_name)
+
+            # Check if the item is a directory (i.e., an artist folder).
+            if os.path.isdir(artist_path):
+                
+                # Now, get the list of album folders inside the artist folder.
+                album_folders = os.listdir(artist_path)
+                album_folders.sort()
+
+                # Loop through each item in the artist folder.
+                for album_name in album_folders:
+                    album_path = os.path.join(artist_path, album_name)
+
+                    # Check if this item is also a directory (an album folder).
+                    if os.path.isdir(album_path):
+                        # Write the formatted string to the file.
+                        # f.write(f"{artist_name} - {album_name}\n")
+                        element_list.append([artist_name, album_name])
 
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
 
+    return element_list
+
+def save_results(_myList, _output_file):
+
+    with open(_output_file, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f, delimiter=";")
+        # writer.writerows(_myList)
+        for entry in _myList:
+            writer.writerow(entry)
+
+    print(f"Saved to {_output_file}")
 
 if __name__ == "__main__":
 
@@ -73,8 +86,9 @@ if __name__ == "__main__":
 
     # The name of the output file that will be created in the same
     # directory where you run this script.
-    output_filename = 'album_list.txt'
+    output_filename = os.path.join(root_music_directory,'album_list.csv')
 
     # --- Run the function ---
-    create_album_list(root_music_directory, output_filename)
+    myList = create_album_list(root_music_directory)
+    save_results(myList, output_filename)
 
